@@ -19,8 +19,8 @@ This repository contains the OLX bot script for Telegram.
 
 4. Set environment variables:
    ```bash
-   export TOKEN=7995424516:AAF1rOGDztjK8STig_9Zga5y668tIKnbgF0
-   export CHAT_ID=468380894
+   export TOKEN=
+   export CHAT_ID=
    ```
 
 5. Run the bot:
