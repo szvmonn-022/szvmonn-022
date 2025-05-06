@@ -35,4 +35,4 @@ This repository contains the OLX bot script for Telegram.
 3. Connect your GitHub account and select this repo.
 4. Add environment variables `TOKEN` and `CHAT_ID` in the Railway dashboard.
 5. Set the start command to `python olx_bot.py`.
-6. Click **Deploy`. 
+6. Click **Deploy`.

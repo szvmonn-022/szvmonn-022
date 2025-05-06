@@ -1,3 +1,4 @@
+import os
 import requests
 from bs4 import BeautifulSoup
 import sqlite3
@@ -7,18 +8,19 @@ from telegram import Bot
 from telegram.error import TelegramError
 
 # ---------------------- CONFIGURATION ----------------------
-TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'  # <-- Set via environment variable
-CHAT_ID = 'YOUR_CHAT_ID'            # <-- Set via environment variable
+# Token and Chat ID are read from environment variables
+TOKEN = os.getenv('TOKEN')
+CHAT_ID = os.getenv('CHAT_ID')
 
-# URL wyszukiwania OLX dla Warszawy +20km
-SEARCH_URL = (
-    'https://www.olx.pl/oferty/q-iphone/'
-    '?search\[filter_enum_item_condition\]\[0\]=new'
-    '&search\[filter_enum_item_condition\]\[1\]=used'
-    '&search\[filter_enum_item_condition\]\[2\]=not_specified'
-    '&search\[region_id\]=18'
-    '&search\[page\]=1'
-)
+# ---------------------- SEARCH SETTINGS ----------------------
+BASE_URL = 'https://www.olx.pl/oferty/q-iphone/'
+SEARCH_PARAMS = {
+    'search[filter_enum_item_condition][0]': 'new',
+    'search[filter_enum_item_condition][1]': 'used',
+    'search[filter_enum_item_condition][2]': 'not_specified',
+    'search[region_id]': '18',  # Mazowieckie (Warszawa +20km)
+    'search[page]': '1'
+}
 
 # ---------------------- DATABASE SETUP ----------------------
 def init_db():
@@ -35,7 +37,7 @@ def init_db():
 
 # ---------------------- SCRAPING LOGIC ----------------------
 def fetch_offers():
-    response = requests.get(SEARCH_URL)
+    response = requests.get(BASE_URL, params=SEARCH_PARAMS)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, 'html.parser')
     offers = []
@@ -43,7 +45,7 @@ def fetch_offers():
         link_tag = item.find('a', href=True)
         if not link_tag:
             continue
-        link = link_tag['href']
+        url = link_tag['href']
         title_tag = item.find('strong')
         price_tag = item.find('p', class_='price')
         img_tag = item.find('img')
@@ -53,10 +55,10 @@ def fetch_offers():
         price = price_tag.get_text(strip=True)
         img_url = img_tag.get('data-src') or img_tag.get('src')
         # Filter models 12-16 variants
-        models = [12,13,14,15,16]
+        models = [12, 13, 14, 15, 16]
         if any(f"iPhone {m}" in title for m in models) or            any(f"iPhone {m} Plus" in title for m in models) or            any(f"iPhone {m} Pro" in title for m in models) or            any(f"iPhone {m} Pro Max" in title for m in models):
             offers.append({
-                'url': link,
+                'url': url,
                 'title': title,
                 'price': price,
                 'img_url': img_url
@@ -65,12 +67,12 @@ def fetch_offers():
 
 # ---------------------- TELEGRAM NOTIFICATIONS ----------------------
 def send_telegram(offer):
-    bot = Bot(token=os.getenv('TOKEN'))
+    bot = Bot(token=TOKEN)
     caption = f"{offer['title']}\n{offer['price']}\n{offer['url']}"
     try:
-        bot.send_photo(chat_id=os.getenv('CHAT_ID'), photo=offer['img_url'], caption=caption)
+        bot.send_photo(chat_id=CHAT_ID, photo=offer['img_url'], caption=caption)
     except TelegramError:
-        bot.send_message(chat_id=os.getenv('CHAT_ID'), text=caption)
+        bot.send_message(chat_id=CHAT_ID, text=caption)
 
 # ---------------------- JOB FUNCTION ----------------------
 def job():
