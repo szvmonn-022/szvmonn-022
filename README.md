@@ -1,16 +1,38 @@
-## Hi there 👋
+# OLX Telegram Bot
 
-<!--
-**szvmonn-022/szvmonn-022** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+This repository contains the OLX bot script for Telegram.
 
-Here are some ideas to get you started:
+## Usage
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+1. Clone the repository:
+   ```bash
+   git clone <your-repo-url>
+   cd olx-telegram-bot
+   ```
+
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Create a Telegram bot and get the `TOKEN` and `CHAT_ID`.
+
+4. Set environment variables:
+   ```bash
+   export TOKEN=your_token_here
+   export CHAT_ID=your_chat_id_here
+   ```
+
+5. Run the bot:
+   ```bash
+   python olx_bot.py
+   ```
+
+## Deploying on Railway
+
+1. Fork or create this repository on your GitHub account.
+2. In Railway, click **New Project** > **Deploy from GitHub Repo**.
+3. Connect your GitHub account and select this repo.
+4. Add environment variables `TOKEN` and `CHAT_ID` in the Railway dashboard.
+5. Set the start command to `python olx_bot.py`.
+6. Click **Deploy`. 
